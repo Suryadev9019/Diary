@@ -1,0 +1,28 @@
+<div class="max-w-3xl mx-auto mt-10 p-8 bg-white shadow-2xl rounded-2xl border border-gray-100">
+  <!-- Title -->
+  <h1 class="text-3xl font-extrabold text-gray-900 mb-4">
+    <%= @diary_entry.title %>
+  </h1>
+
+  <!-- Mood Analysis Card -->
+  <div class="mb-6 p-4 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg">
+    <h2 class="text-lg font-semibold mb-2">🧠 Mood Analysis</h2>
+    <p class="text-sm opacity-90">
+      <% if @diary_entry.mood.present? %>
+        Today you were feeling: <span class="font-bold"><%= @diary_entry.mood.capitalize %></span>.
+      <% else %>
+        Mood not added yet. ✍️
+      <% end %>
+    </p>
+  </div>
+
+  <!-- Diary Content -->
+  <div class="prose prose-lg text-gray-700">
+    <%= simple_format(@diary_entry.content) %>
+  </div>
+
+  <!-- Back Button -->
+  <div class="mt-6">
+    <%= link_to "← Back to Entries", diary_entries_path, class: "text-indigo-600 hover:underline font-medium" %>
+  </div>
+</div>
