@@ -1,2 +1,42 @@
-#!/usr/bin/env ruby
-exec "./bin/rails", "server", *ARGV
+#!/usr/bin/env sh
+
+# Function to cleanup processes on exit
+cleanup() {
+  echo "\nShutting down development server..."
+  # Kill any existing Rails server processes
+  pkill -f "rails server" 2>/dev/null || true
+  pkill -f "tailwindcss:watch" 2>/dev/null || true
+  # Kill any processes using port 3000
+  if command -v lsof >/dev/null 2>&1; then
+    lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+  fi
+  # Clean up PID file
+  rm -f tmp/pids/server.pid 2>/dev/null || true
+  exit 0
+}
+
+# Trap signals to ensure cleanup
+trap cleanup INT TERM EXIT
+
+# Clean up any existing processes before starting
+echo "Cleaning up any existing processes..."
+pkill -f "rails server" 2>/dev/null || true
+rm -f tmp/pids/server.pid 2>/dev/null || true
+
+if ! gem list foreman -i --silent; then
+  echo "Installing foreman..."
+  gem install foreman
+fi
+
+# Default to port 3000 if not specified
+export PORT="${PORT:-3000}"
+
+# Let the debug gem allow remote connections,
+# but avoid loading until `debugger` is called
+export RUBY_DEBUG_OPEN="true"
+export RUBY_DEBUG_LAZY="true"
+
+echo "Starting development server on port $PORT..."
+echo "Press Ctrl+C to stop"
+
+exec foreman start -f Procfile.dev "$@"

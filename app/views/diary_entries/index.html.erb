@@ -1,0 +1,51 @@
+<header class="flex justify-between items-center mb-8">
+  <h1 class="text-4xl font-extrabold text-gray-900">📔 All Diary Entries</h1>
+
+  <div class="flex gap-3">
+    <% if user_signed_in? %>
+      <%= link_to "➕ New Entry", new_diary_entry_path, class: "px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition" %>
+      <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition" %>
+    <% else %>
+      <%= link_to "Login", new_user_session_path, class: "px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition" %>
+    <% end %>
+  </div>
+</header>
+
+<% if @diary_entries.any? %>
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <% @diary_entries.each do |entry| %>
+      <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
+        <!-- Title -->
+        <h2 class="text-xl font-semibold mb-2 text-gray-800">
+          <%= link_to entry.title, diary_entry_path(entry), class: "hover:text-blue-600" %>
+        </h2>
+
+        <!-- Content Preview -->
+        <p class="text-gray-600 mb-4 truncate" title="<%= entry.content %>">
+          <%= entry.content.truncate(120) %>
+        </p>
+
+        <!-- Mood Badge -->
+        <% if entry.mood_category.present? %>
+          <span class="inline-block px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-800">
+            Mood: <%= entry.mood_category.capitalize %>
+          </span>
+        <% else %>
+          <span class="inline-block px-2 py-1 text-xs font-medium rounded bg-gray-200 text-gray-600">
+            No mood detected
+          </span>
+        <% end %>
+
+        <!-- Created Date -->
+        <p class="text-sm text-gray-400 mt-2">
+          Created on <%= entry.created_at.strftime("%b %d, %Y") %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-gray-500 text-lg">
+    No diary entries found. 
+    <%= link_to "Create your first entry", new_diary_entry_path, class: "text-yellow-600 hover:underline" %>
+  </p>
+<% end %>
