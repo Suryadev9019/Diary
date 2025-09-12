@@ -4,25 +4,33 @@
     <%= @diary_entry.title %>
   </h1>
 
-  <!-- Mood Analysis Card -->
-  <div class="mb-6 p-4 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg">
+  <!-- Mood Analysis -->
+  <div class="mb-6 p-5 rounded-xl shadow-lg border 
+              <%= MoodAnalyzer.mood_color(@diary_entry.mood || 'neutral') %> bg-gray-50">
     <h2 class="text-lg font-semibold mb-2">🧠 Mood Analysis</h2>
-    <p class="text-sm opacity-90">
-      <% if @diary_entry.mood.present? %>
-        Today you were feeling: <span class="font-bold"><%= @diary_entry.mood.capitalize %></span>.
-      <% else %>
-        Mood not added yet. ✍️
-      <% end %>
-    </p>
+    <% if @diary_entry.mood.present? %>
+      <p class="text-gray-800 text-base flex items-center gap-2">
+        <span class="text-2xl">
+          <%= MoodAnalyzer.mood_emoji(@diary_entry.mood) %>
+        </span>
+        Today you were feeling:
+        <span class="font-bold capitalize"><%= @diary_entry.mood.gsub('_',' ') %></span>
+        (<%= @diary_entry.mood_score %>)
+      </p>
+    <% else %>
+      <p class="text-gray-500">Mood could not be detected. ✍️</p>
+    <% end %>
   </div>
 
   <!-- Diary Content -->
-  <div class="prose prose-lg text-gray-700">
+  <div class="prose prose-lg text-gray-700 leading-relaxed">
     <%= simple_format(@diary_entry.content) %>
   </div>
 
-  <!-- Back Button -->
-  <div class="mt-6">
-    <%= link_to "← Back to Entries", diary_entries_path, class: "text-indigo-600 hover:underline font-medium" %>
+  <!-- Actions -->
+  <div class="mt-6 flex justify-between">
+    <%= link_to "✏️ Edit", edit_diary_entry_path(@diary_entry), class: "px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600" %>
+    <%= link_to "🗑️ Delete", @diary_entry, method: :delete, data: { confirm: "Are you sure?" }, class: "px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600" %>
+    <%= link_to "← Back to Entries", diary_entries_path, class: "px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400" %>
   </div>
 </div>
